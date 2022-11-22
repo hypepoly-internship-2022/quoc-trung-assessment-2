@@ -1,30 +1,58 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class DrawRay : MonoBehaviour
 {
     Camera mainCamera;
-    Vector3 mousePos;
+    bool isDragging;
+    GameObject cubeObject;
+    float xPos;
+    float zPos;
+    int quadIndex = 0;
+    int cubeIndex = 1;
     
     void Start()
     {
-       
+        isDragging = false;
         mainCamera = GetComponent<Camera>();
     }
 
-    void Update()
+    void FixedUpdate()
     {
-        RaycastHit hit;
-        mousePos = Input.mousePosition;
-        Ray ray = mainCamera.ScreenPointToRay(mousePos);
-        if(Physics.Raycast(ray,out hit))
+        Debug.Log(isDragging);
+
+        if (Input.GetMouseButton(0))
         {
-            if(hit.collider.tag == "Object" && Input.GetMouseButton(0))
-            {  
+            Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+            RaycastHit[] hits = Physics.RaycastAll(ray);
+            Debug.Log(hits.Length);
+            Debug.Log("xPos: " + xPos);
+            Debug.Log("zPos: " + zPos);
+    
+            if (hits.Length >=1)
+            {
+                xPos = hits[quadIndex].point.x;
+                zPos = hits[quadIndex].point.z;
+
+                if (hits.Length == 2)
+                {
+                    Debug.Log(hits[cubeIndex].point);
+                    isDragging = true;
+                    cubeObject = hits[cubeIndex].collider.gameObject;
+                }
+            }
+
+            if (isDragging)
+            {
                 Debug.DrawRay(ray.origin, ray.direction * 20, Color.red);
-                hit.transform.position = new Vector3(hit.point.x, hit.transform.position.y, hit.point.z);    
+                Vector3 pos = new Vector3(xPos, cubeObject.gameObject.transform.position.y, zPos);
+                cubeObject.transform.position = pos;
             }
         }
-    }
+        
+        if (Input.GetMouseButtonUp(0))
+        {
+            isDragging = false;
+        }
+    }     
 }
+
