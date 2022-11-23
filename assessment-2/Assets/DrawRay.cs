@@ -12,22 +12,17 @@ public class DrawRay : MonoBehaviour
     
     void Start()
     {
-        isDragging = false;
         mainCamera = GetComponent<Camera>();
     }
 
     void FixedUpdate()
     {
-        Debug.Log(isDragging);
-
         if (Input.GetMouseButton(0))
         {
+            
             Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
             RaycastHit[] hits = Physics.RaycastAll(ray);
-            Debug.Log(hits.Length);
-            Debug.Log("xPos: " + xPos);
-            Debug.Log("zPos: " + zPos);
-    
+ 
             if (hits.Length >=1)
             {
                 xPos = hits[quadIndex].point.x;
@@ -35,12 +30,10 @@ public class DrawRay : MonoBehaviour
 
                 if (hits.Length == 2)
                 {
-                    Debug.Log(hits[cubeIndex].point);
                     isDragging = true;
                     cubeObject = hits[cubeIndex].collider.gameObject;
                 }
             }
-
             if (isDragging)
             {
                 Debug.DrawRay(ray.origin, ray.direction * 20, Color.red);
@@ -48,11 +41,10 @@ public class DrawRay : MonoBehaviour
                 cubeObject.transform.position = pos;
             }
         }
-        
-        if (Input.GetMouseButtonUp(0))
+        else
         {
-            isDragging = false;
+            isDragging=false;
         }
-    }     
+    } 
 }
 
